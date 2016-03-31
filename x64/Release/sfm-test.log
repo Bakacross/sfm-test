@@ -1,0 +1,30 @@
+﻿La génération a démarré 31-03-16 22:47:47.
+     1>Projet "C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\sfm-test\sfm-test.vcxproj" sur le nœud 2 (Build cible(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /IC:\opencv\build\x64\vc12\..\..\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt Source.cpp
+         Source.cpp
+     1>Source.cpp(47): warning C4244: 'initialisation' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(73): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(79): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(85): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(92): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(102): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(128): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(131): warning C4267: 'argument' : conversion de 'size_t' en 'int', perte possible de données
+     1>Source.cpp(132): warning C4267: 'argument' : conversion de 'size_t' en 'int', perte possible de données
+     1>Source.cpp(177): warning C4244: '=' : conversion de 'int64' en 'double', perte possible de données
+     1>Source.cpp(248): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+     1>Source.cpp(343): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\x64\Release\sfm-test.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:C:\opencv\build\x64\vc12\lib opencv_ts300.lib opencv_world300.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\x64\Release\sfm-test.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\x64\Release\sfm-test.lib" /MACHINE:X64 x64\Release\Source.obj
+         Génération de code en cours
+         1 of 891 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+           0 functions were new in current compilation
+           0 functions had inline decision re-evaluated but remain unchanged
+         Fin de la génération du code
+         sfm-test.vcxproj -> C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\x64\Release\sfm-test.exe
+     1>Génération du projet "C:\Users\Neocross\Documents\Visual Studio 2015\Projects\sfm-test\sfm-test\sfm-test.vcxproj" terminée (Build cible(s)).
+
+La génération a réussi.
+
+Temps écoulé 00:00:05.82

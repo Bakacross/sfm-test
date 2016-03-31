@@ -1,0 +1,11 @@
+﻿La génération a démarré 23-02-16 16:46:55.
+     1>Projet "c:\Users\Neocross\documents\visual studio 2015\Projects\sfm-test\sfm-test\sfm-test.vcxproj" sur le nœud 2 (Rebuild cible(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+     1>c:\users\neocross\documents\visual studio 2015\projects\sfm-test\sfm-test\source.cpp(1): fatal error C1083: Impossible d'ouvrir le fichier include : 'opencv2/highgui/highgui.hpp' : No such file or directory
+     1>Génération du projet "c:\Users\Neocross\documents\visual studio 2015\Projects\sfm-test\sfm-test\sfm-test.vcxproj" terminée (Rebuild cible(s)) -- ÉCHEC.
+
+ÉCHEC de la build.
+
+Temps écoulé 00:00:00.76
