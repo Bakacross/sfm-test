@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	Mat Kinv;
 	invert(K, Kinv);
 
-	namedWindow("hihi", WINDOW_NORMAL);
+	namedWindow("hihi", CV_WINDOW_AUTOSIZE);
 	//namedWindow("hoho", WINDOW_NORMAL);
 
 	if (image.empty() || image2.empty()) //check whether the image is loaded or not
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	cout << "BEFORE GFTT : " << tick << "s" << endl;
 	tick = getTickCount();
 	goodFeaturesToTrack(image_gray, corners, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k_harris);
-	goodFeaturesToTrack(image_gray2, corners2, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k_harris);
+	//goodFeaturesToTrack(image_gray2, corners2, maxCorners, qualityLevel, minDistance, mask, blockSize, useHarrisDetector, k_harris);
 	//cout << "** Number of corners detected in image1: " << corners.size() << endl;
 	//cout << "** Number of corners detected in image2: " << corners2.size() << endl;
 	tick = ((double)getTickCount() - tick) / getTickFrequency();
@@ -105,98 +105,32 @@ int main(int argc, char* argv[])
 	cout << "** Number of corners with optical flow in image2: " << corners.size() << endl;
 
 	// First, filter out the points with high error
-	vector<Point2f>right_points_to_find;
-	vector<int>right_points_to_find_back_index;
+	vector<Point2f> imgpts1, imgpts2;
 	for (unsigned int i = 0; i<status.size(); i++) {
 		if (status[i] && err[i] < 10.0) {
-			// Keep the original index of the point in the
-			// optical flow array, for future use
-			right_points_to_find_back_index.push_back(i);
-			// Keep the feature point itself
-			right_points_to_find.push_back(flow_corners[i]);
-			
-			draw_opticalFlow(corners[i], flow_corners[i], image2, CV_RGB(255, 0, 0));
+			imgpts1.push_back(corners[i]);
+			imgpts2.push_back(flow_corners[i]);
+			//draw_opticalFlow(corners[i], flow_corners[i], image2, CV_RGB(255, 0, 0));
 
 		}
 		else {
 			status[i] = 0; // a bad flow
 		}
 	}
-	cout << "after optical flow status : " << right_points_to_find.size() << "/" << status.size() << endl;
+	cout << "after optical flow status : " << imgpts2.size() << "/" << status.size() << endl;
 	tick = ((double)getTickCount() - tick) / getTickFrequency();
 	cout << "processing time after optical flow status: " << tick << "s" << endl;
 	tick = getTickCount();
-	//imshow("hihi", image2);
-	// for each right_point see which detected feature it belongs to
-	Mat right_points_to_find_flat = Mat(right_points_to_find).reshape(1, right_points_to_find.size()); //flatten array
-	Mat right_features_flat = Mat(corners2).reshape(1, corners2.size());
-	// Look around each OF point in the right image
-	// for any features that were detected in its area
-	// and make a match.
-	BFMatcher matcher(CV_L2);
-	vector<vector<DMatch>>nearest_neighbors;
-	matcher.radiusMatch(right_points_to_find_flat, right_features_flat, nearest_neighbors, 4.0f);
-	// Check that the found neighbors are unique (throw away neighbors
-	// that are too close together, as they may be confusing)
-	vector<DMatch> matches;
-	std::set<int>found_in_right_points; // for duplicate prevention
-	for (int i = 0; i<nearest_neighbors.size(); i++) {
-		DMatch _m;
-		if (nearest_neighbors[i].size() == 1) {
-			_m = nearest_neighbors[i][0]; // only one neighbor
-		}
-		else if (nearest_neighbors[i].size()>1) {
-			// 2 neighbors – check how close they are
-			double ratio = nearest_neighbors[i][0].distance /
-				nearest_neighbors[i][1].distance;
-			if (ratio < 0.7) { // not too close
-							   // take the closest (first) one
-				_m = nearest_neighbors[i][0];
-			}
-			else { // too close – we cannot tell which is better
-				continue; // did not pass ratio test – throw away
-			}
-		}
-		else {
-			continue; // no neighbors... :(
-		}
-		// prevent duplicates
-		if (found_in_right_points.find(_m.trainIdx) == found_in_right_points.
-			end()) {
-			// The found neighbor was not yet used:
-			// We should match it with the original indexing
-			// ofthe left point
-			_m.queryIdx = right_points_to_find_back_index[_m.queryIdx];
-			matches.push_back(_m); // add this match
-			found_in_right_points.insert(_m.trainIdx);
-		}
-	}
-	tick = ((double)getTickCount() - tick) / getTickFrequency();
-	cout << "processing time after knn : " << tick << "s" << endl;
-	cout << "pruned " << matches.size() << " / " << nearest_neighbors.size() << " matches" << endl;
-	tick = getTickCount();
-	//vector<Point2f> pts1;
-	//for (int i = 0; i < matches.size(); i++) {
-	//	pts1.push_back(right_points_to_find[matches[i].queryIdx]);
-	//}
-	vector<Point2f> imgpts1, imgpts2;
-	for (unsigned int i = 0; i<matches.size(); i++) {
-		imgpts1.push_back(corners[matches[i].queryIdx]);
-		imgpts2.push_back(flow_corners[matches[i].queryIdx]);
-		draw_opticalFlow(corners[matches[i].queryIdx], flow_corners[matches[i].queryIdx], image2, CV_RGB(0, 0, 255));
-	}
 	
 	vector<uchar> stat(imgpts1.size());
-	Mat F = findFundamentalMat(imgpts1, imgpts2, FM_RANSAC, 0.1, 0.99, stat);
+	Mat F = findFundamentalMat(imgpts1, imgpts2, FM_RANSAC, 0.2, 0.99, stat);
 	cout << "F keeping " << countNonZero(stat) << " / " << stat.size() << endl;
 	vector<Point2f> imgpts_good1, imgpts_good2;
-	vector<int>imgpts_back_index;
-	for (unsigned int i = 0; i<matches.size(); i++) {
+	for (unsigned int i = 0; i<imgpts1.size(); i++) {
 		if (stat[i]) {
 			imgpts_good1.push_back(imgpts1[i]);
 			imgpts_good2.push_back(imgpts2[i]);
-			imgpts_back_index.push_back(matches[i].queryIdx);
-			draw_opticalFlow(corners[matches[i].queryIdx], flow_corners[matches[i].queryIdx], image2, CV_RGB(0, 255, 0));
+			draw_opticalFlow(imgpts1[i], imgpts2[i], image2, CV_RGB(0, 255, 0));
 		}
 	}
 	
@@ -211,7 +145,7 @@ int main(int argc, char* argv[])
 		0, 0, 1);
 	Mat_ <double> R = svd_u * Mat(W) * svd_vt;
 	Mat_ <double> t = svd_u.col(2);
-
+	cout << t(0) << " " << t(1) << " " << t(2) << endl;
 	if (!CheckCoherentRotation(R)) {
 		cout << "resulting rotation is no coherent" << endl;
 		P1 = 0;
@@ -226,6 +160,7 @@ int main(int argc, char* argv[])
 		R(2, 0), R(2, 1), R(2, 2), t(2));
 	vector<double> reproj_error;
 	vector<Point3d> pointcloud;
+	vector<int> radius;
 	Mat_<double> KP1 = K*Mat(P1); // 3x3 * 3x4 => 3*4
 	cout << "P1 :" << P1 << endl;
 	//cout << "Mat P1 :" << Mat(P1) << endl;
@@ -249,12 +184,16 @@ int main(int argc, char* argv[])
 		reproj_error.push_back(norm(xPt_img_ - imgpts_good2[i]));
 		//store 3D point
 		pointcloud.push_back(Point3d(X(0), X(1), X(2)));
+		radius.push_back(sqrt(X(0)*X(0) + X(1) *X(1) + X(2)*X(2)));
 	}
 	
 	tick = ((double)getTickCount() - tick) / getTickFrequency();
 	cout << "processing time after triang : " << tick << "s" << endl;
 	Scalar mse = mean(reproj_error);
 	cout << "Done. (" << pointcloud.size() << "points, mean reproj err = " << mse[0] << ")" << endl;
+	
+	cv::FileStorage file("pos.txt", cv::FileStorage::WRITE);
+	
 	for (unsigned int i = 0; i < pointcloud.size(); i++) {
 		string x, y, z;
 		stringstream streamx, streamy, streamz;
@@ -265,8 +204,10 @@ int main(int argc, char* argv[])
 		streamz << fixed << setprecision(2) << pointcloud[i].z;
 		z = streamz.str();
 		String txt = x + "," + y + "," + z;
-		putText(image2, txt, flow_corners[imgpts_back_index[i]], CV_FONT_HERSHEY_SIMPLEX, 1, Scalar(255,255,255), 3, CV_AA);
-		cout << flow_corners[imgpts_back_index[i]] << " -> point cloud -> " << pointcloud[i] << endl;
+		file << "txt" << txt;
+		//putText(image2, txt, imgpts_good2[i], CV_FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar(255,255,255), 3, CV_AA);
+		putText(image2, to_string(radius[i]), imgpts_good2[i], FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar(255, 0, 0), 3, CV_AA);
+		cout << imgpts_good2[i] << " -> point cloud -> " << pointcloud[i] << endl;
 	}
 
 	imshow("hihi", image2);
